@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "gulp serve",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -14,8 +15,13 @@
   "dependencies": {
     "body-parser": "^1.13.2",
     "express": "^4.13.1",
+    "fs": "0.0.2",
     "jwt-simple": "^0.3.0",
+    "lodash": "^3.10.0",
     "method-override": "^2.3.4",
+    "mongodb": "^2.0.39",
+    "mongoose": "^4.1.0",
+    "morgan": "^1.6.1",
     "passport": "^0.2.2"
   }
 }

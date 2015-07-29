@@ -1,22 +1,41 @@
 var express = require('express'),
   mongoose = require('mongoose'),
   methodOverride = require('method-override'),
-  bodyParser = require('body-parser')
+  bodyParser = require('body-parser'),
+  morgan = require('morgan'),
+  fs = require('fs'),
+  passport = require('passport'),
+  join = require('path').join,
 
-  dbConfig = require('config/database'),
-  appConfig = require('config/app'),
-
+  appConfig = require('./config/config'),
+  appConfigPort = appConfig.port,
   app = express()
   ;
 
-app.use(express.static(__dirname + '/public'));                 // set the static files location /public/img will be /img for users
-app.use(morgan('dev'));                                         // log every request to the console
-app.use(bodyParser.urlencoded({'extended':'true'}));            // parse application/x-www-form-urlencoded
-app.use(bodyParser.json());                                     // parse application/json
-app.use(bodyParser.json({ type: 'application/vnd.api+json' })); // parse application/vnd.api+json as json
-app.use(methodOverride());
+// Connect to mongodb
+var connect = function () {
+  var options = { server: { socketOptions: { keepAlive: 1 } } };
+  mongoose.connect(appConfig.dbUrl, options);
+};
+connect();
 
-require('app/routes')(app);
+mongoose.connection.on('error', console.log);
+mongoose.connection.on('disconnected', connect);
 
-app.listen(process.env.PORT || appConfig.port);
-console.log("App listening on port " + port);
+// Bootstrap models
+fs.readdirSync(join(__dirname, 'app/models')).forEach(function (file) {
+  if (~file.indexOf('.js')) require(join(__dirname, 'app/models', file));
+});
+
+app
+  .use(express.static(__dirname + '/public'))
+  .use(morgan('dev'))
+  .use(bodyParser.urlencoded({extended : 'true'}))
+  .use(bodyParser.json())
+  .use(bodyParser.json({ type : 'application/vnd.api+json'}))
+  .use(methodOverride());
+
+require('./config/routes')(app, passport);
+
+app.listen(process.env.PORT || appConfigPort);
+console.log("App listening on port " + appConfigPort);
