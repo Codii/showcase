@@ -37,5 +37,7 @@ app
 
 require('./config/routes')(app, passport);
 
+require('./config/passport')(passport, appConfig);
+
 app.listen(process.env.PORT || appConfigPort);
 console.log("App listening on port " + appConfigPort);
