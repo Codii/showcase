@@ -23,7 +23,7 @@ var AuthTokenSchema = new Schema({
  * Pre-save hook
  */
 
-UserSchema.pre('save', function(next) {
+AuthTokenSchema.pre('save', function(next) {
   if (!this.isNew) return next();
 
   this.secret = this.generateSecret(password);
@@ -48,9 +48,5 @@ AuthTokenSchema.methods = {
     }
   }
 };
-
-AuthTokenSchema.statics = {
-
-}
 
 mongoose.model('AuthToken', AuthTokenSchema);

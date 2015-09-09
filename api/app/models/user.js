@@ -1,31 +1,24 @@
-
 /**
  * Module dependencies.
  */
 
-var mongoose = require('mongoose');
-var crypto = require('crypto');
-
-var Schema = mongoose.Schema;
-
-/**
- * User Schema
- */
-
-var UserSchema = new Schema({
-  firstname: { type: String, default: '' },
-  lastname: { type: String, default: '' },
-  email: { type: String, default: '' },
-  username: { type: String, default: '' },
-  hashed_password: { type: String, default: '' },
-  salt: { type: String, default: '' }
-});
+var mongoose = require('mongoose'),
+  crypto = require('crypto'),
+  userSchema = new mongoose.Schema({
+    firstname: { type: String, default: '' },
+    lastname: { type: String, default: '' },
+    email: { type: String, default: '' },
+    username: { type: String, default: '' },
+    hashed_password: { type: String, default: '' },
+    salt: { type: String, default: '' }
+  })
+  ;
 
 /**
  * Virtuals
  */
 
-UserSchema
+userSchema
   .virtual('password')
   .set(function(password) {
     this._password = password;
@@ -44,12 +37,12 @@ var validatePresenceOf = function (value) {
 
 // the below 5 validations only apply if you are signing up traditionally
 
-UserSchema.path('email').validate(function (email) {
+userSchema.path('email').validate(function (email) {
   if (this.skipValidation()) return true;
   return email.length;
 }, 'Email cannot be blank');
 
-UserSchema.path('email').validate(function (email, fn) {
+userSchema.path('email').validate(function (email, fn) {
   var User = mongoose.model('User');
   if (this.skipValidation()) fn(true);
 
@@ -61,12 +54,12 @@ UserSchema.path('email').validate(function (email, fn) {
   } else fn(true);
 }, 'Email already exists');
 
-UserSchema.path('username').validate(function (username) {
+userSchema.path('username').validate(function (username) {
   if (this.skipValidation()) return true;
   return username.length;
 }, 'Username cannot be blank');
 
-UserSchema.path('hashed_password').validate(function (hashed_password) {
+userSchema.path('hashed_password').validate(function (hashed_password) {
   if (this.skipValidation()) return true;
   return hashed_password.length;
 }, 'Password cannot be blank');
@@ -76,7 +69,7 @@ UserSchema.path('hashed_password').validate(function (hashed_password) {
  * Pre-save hook
  */
 
-UserSchema.pre('save', function(next) {
+userSchema.pre('save', function(next) {
   if (!this.isNew) return next();
 
   if (!validatePresenceOf(this.password) && !this.skipValidation()) {
@@ -84,13 +77,12 @@ UserSchema.pre('save', function(next) {
   } else {
     next();
   }
-})
+});
 
 /**
  * Methods
  */
-
-UserSchema.methods = {
+userSchema.methods = {
 
   /**
    * Authenticate - check if the passwords are the same
@@ -99,7 +91,6 @@ UserSchema.methods = {
    * @return {Boolean}
    * @api public
    */
-
   authenticate: function (plainText) {
     return this.encryptPassword(plainText) === this.hashed_password;
   },
@@ -144,7 +135,7 @@ UserSchema.methods = {
   }
 };
 
-UserSchema.statics = {
+userSchema.statics = {
   /**
    * List users
    *
@@ -152,15 +143,29 @@ UserSchema.statics = {
    * @param {Function} cb
    * @api private
    */
-
   list: function (options, cb) {
-    var criteria = options.criteria || {}
+    var criteria = options.criteria || {};
 
     this.find(criteria)
       .limit(options.perPage)
       .skip(options.perPage * options.page)
       .exec(cb);
+  },
+  /**
+   * Find by email
+   *
+   * @param {Object} options
+   * @param {Function} cb
+   * @api private
+   */
+  findByEmail: function(email, cb) {
+    this.find({
+      email : email
+    }, cb);
   }
 }
 
-mongoose.model('User', UserSchema);
+module.exports = {
+  schema : userSchema,
+  model  : mongoose.model('User', userSchema)
+};
