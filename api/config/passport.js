@@ -6,10 +6,9 @@
  * Module dependencies.
  */
 
-var mongoose = require('mongoose');
-var User = mongoose.model('User');
-
-var token = require('./passport/token');
+var mongoose = require('mongoose'),
+  User = mongoose.model('User'),
+  TokenStrategy = require('./passport/tokenStrategy');
 /**
  * Expose
  */
@@ -27,5 +26,19 @@ module.exports = function (passport, config) {
   })
 
   // use these strategies
-  passport.use(token);
+  passport.use(new TokenStrategy(
+    function(token, done) {
+      var options = {
+        criteria: { token: token },
+        select: 'username email hashed_password salt'
+      };
+      User.load(options, function (err, user) {
+        if (err) return done(err);
+        if (!user) {
+          return done(null, false, { message: 'Invalid auth token' });
+        }
+        return done(null, user);
+      });
+    }
+  ));
 };
