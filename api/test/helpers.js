@@ -4,12 +4,8 @@
  */
 
 var async = require('async'),
-  chai = require('chai'),
-  passport = require('chai-passport-strategy'),
   users = require("../app/models/user.js"),
-  UserModel = users.model
-  ;
-
+  UserModel = users.model;
 
 /**
  * Clear database
@@ -17,8 +13,6 @@ var async = require('async'),
  * @param {Function} done
  * @api public
  */
-
-chai.use(passport);
 
 exports.clearDb = function (done) {
   async.parallel([

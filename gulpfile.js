@@ -12,7 +12,17 @@ gulp.task('serve', function(){
 gulp.task('test', function(){
   return gulp.src('api/test/**/*.spec.js')
     .pipe(mocha({
-      require: ['./api/test/helpers']
-    }));
+      reporter : 'nyan',
+      require: ['./api/test/init']
+    }))
+    .on('error', _handleError)
+    .once('end', function () {
+      process.exit();
+    })
+    ;
 });
 
+function _handleError(err) {
+  console.log(err.toString());
+  this.emit('end');
+}

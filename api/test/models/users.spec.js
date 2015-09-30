@@ -1,8 +1,9 @@
 var mongoose = require('mongoose'),
-  should = require('should'),
+  chai = require('chai'),
+  expect = chai.expect,
   _ = require('lodash'),
-  testHelpers = require('./helpers'),
-  users = require("../app/models/user.js"),
+  testHelpers = require('../helpers'),
+  users = require("../../app/models/user.js"),
   UserModel = users.model;
 
 mongoose.connect('mongodb://localhost/showcase_test');
@@ -12,7 +13,6 @@ describe('Users', function() {
     fakeUser;
 
   beforeEach(function(done){
-    testHelpers.clearDb();
     UserModel.create({
       email : fakeEmail,
       username : "fakeUser",
@@ -27,13 +27,13 @@ describe('Users', function() {
           return done();
         }
         fakeUser = _.first(users);
-        should(fakeUser).be.ok();
+        expect(fakeUser).to.be.ok;
         done();
       });
     });
   });
 
-  afterEach(function(){
-    testHelpers.clearDb();
+  afterEach(function(done){
+    testHelpers.clearDb(done);
   });
 });
