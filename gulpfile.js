@@ -1,5 +1,6 @@
 var gulp = require('gulp'),
-  mocha = require('gulp-mocha');
+  mocha = require('gulp-mocha'),
+  jscs = require('gulp-jscs');
 
 gulp.task('default', function() {
   console.log('Now, start writing gulp configuration.');
@@ -18,8 +19,13 @@ gulp.task('test', function(){
     .on('error', _handleError)
     .once('end', function () {
       process.exit();
-    })
-    ;
+    });
+});
+
+gulp.task('qa', function() {
+  gulp.src('api/**/*.js')
+    .pipe(jscs())
+    .pipe(jscs.reporter());
 });
 
 function _handleError(err) {
