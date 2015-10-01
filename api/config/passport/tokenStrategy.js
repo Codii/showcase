@@ -63,14 +63,16 @@ function TokenStrategy(options, verify) {
     verify = options;
     options = {};
   }
-  if (!verify) { throw new TypeError('HTTPBearerStrategy requires a verify callback'); }
+  if (!verify) {
+    throw new TypeError('HTTPBearerStrategy requires a verify callback');
+  }
 
   passport.Strategy.call(this);
   this.name = 'bearer';
   this._verify = verify;
   this._realm = options.realm || 'Users';
   if (options.scope) {
-    this._scope = (Array.isArray(options.scope)) ? options.scope : [ options.scope ];
+    this._scope = (Array.isArray(options.scope)) ? options.scope : [options.scope];
   }
   this._passReqToCallback = options.passReqToCallback;
 }
@@ -88,13 +90,13 @@ util.inherits(TokenStrategy, passport.Strategy);
  * @api protected
  */
 TokenStrategy.prototype.authenticate = function(req) {
-  var token;
+  var _this = this,
+    token, parts, scheme;
 
   if (req.headers && req.headers.authorization) {
-    var parts = req.headers.authorization.split(' ');
+    parts = req.headers.authorization.split(' ');
     if (parts.length == 2) {
-      var scheme = parts[0]
-        , credentials = parts[1];
+      scheme = parts[0] , credentials = parts[1];
 
       if (/^Bearer$/i.test(scheme)) {
         token = credentials;
@@ -105,32 +107,38 @@ TokenStrategy.prototype.authenticate = function(req) {
   }
 
   if (req.body && req.body.access_token) {
-    if (token) { return this.fail(400); }
+    if (token) {
+      return this.fail(400);
+    }
     token = req.body.access_token;
   }
 
   if (req.query && req.query.access_token) {
-    if (token) { return this.fail(400); }
+    if (token) {
+      return this.fail(400);
+    }
     token = req.query.access_token;
   }
 
-  if (!token) { return this.fail(this._challenge()); }
-
-  var self = this;
-
-  function verified(err, user, info) {
-    if (err) { return self.error(err); }
-    if (!user) {
-      if (typeof info == 'string') {
-        info = { message: info }
-      }
-      info = info || {};
-      return self.fail(self._challenge('invalid_token', info.message));
-    }
-    self.success(user, info);
+  if (!token) {
+    return this.fail(this._challenge());
   }
 
-  if (self._passReqToCallback) {
+  function verified(err, user, info) {
+    if (err) {
+      return _this.error(err);
+    }
+    if (!user) {
+      if (typeof info == 'string') {
+        info = { message : info }
+      }
+      info = info || {};
+      return _this.fail(_this._challenge('invalid_token', info.message));
+    }
+    _this.success(user, info);
+  }
+
+  if (_this._passReqToCallback) {
     this._verify(req, token, verified);
   } else {
     this._verify(token, verified);

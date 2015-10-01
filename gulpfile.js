@@ -6,18 +6,18 @@ gulp.task('default', function() {
   console.log('Now, start writing gulp configuration.');
 });
 
-gulp.task('serve', function(){
+gulp.task('serve', function() {
   console.log("Will launch the server");
 });
 
-gulp.task('test', function(){
+gulp.task('test', function() {
   return gulp.src('api/test/**/*.spec.js')
     .pipe(mocha({
       reporter : 'nyan',
-      require: ['./api/test/init']
+      require  : ['./api/test/init']
     }))
     .on('error', _handleError)
-    .once('end', function () {
+    .once('end', function() {
       process.exit();
     });
 });

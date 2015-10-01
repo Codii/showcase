@@ -4,7 +4,7 @@
  */
 
 var async = require('async'),
-  users = require("../app/models/user.js"),
+  users = require('../app/models/user.js'),
   UserModel = users.model;
 
 /**
@@ -14,9 +14,9 @@ var async = require('async'),
  * @api public
  */
 
-exports.clearDb = function (done) {
+exports.clearDb = function(done) {
   async.parallel([
-    function (cb) {
+    function(cb) {
       UserModel.collection.remove(cb)
     }
   ], done)

@@ -6,18 +6,19 @@
  * Module dependencies.
  */
 
-var mongoose = require('mongoose');
-var crypto = require('crypto');
-
-var Schema = mongoose.Schema;
+var mongoose = require('mongoose'),
+  Schema = mongoose.Schema,
 
 /**
  * User Schema
  */
 
-var AuthTokenSchema = new Schema({
-  secret: { type: String, default: '' }
-});
+  AuthTokenSchema = new Schema({
+    userId : { type : ObjectId, nullable : false  },
+    secret : { type : String, nullable : false }
+  })
+
+;
 
 /**
  * Pre-save hook
@@ -25,8 +26,6 @@ var AuthTokenSchema = new Schema({
 
 AuthTokenSchema.pre('save', function(next) {
   if (!this.isNew) return next();
-
-  this.secret = this.generateSecret(password);
 
   next();
 })
@@ -37,16 +36,7 @@ AuthTokenSchema.pre('save', function(next) {
  */
 
 AuthTokenSchema.methods = {
-  generateSecret : function (user) {
-    try {
-      return crypto
-        .createHmac('sha1', user.salt)
-        .update()
-        .digest('hex');
-    } catch (err) {
-      return '';
-    }
-  }
+
 };
 
 mongoose.model('AuthToken', AuthTokenSchema);

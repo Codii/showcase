@@ -6,16 +6,15 @@ var chai = require('chai'),
 describe('Strategy', function() {
 
   describe('passing request to verify callback', function() {
-    var strategy = new Strategy({ passReqToCallback: true }, function(req, token, done) {
+    var strategy = new Strategy({ passReqToCallback : true }, function(req, token, done) {
       if (token == 'vF9dft4qmT') {
-        return done(null, { id: '1234' }, { scope: 'read', foo: req.headers['x-foo'] });
+        return done(null, { id : '1234' }, { scope : 'read', foo : req.headers['x-foo'] });
       }
       return done(null, false);
     });
 
     describe('handling a request with valid token', function() {
-      var user
-        , info;
+      var user, info;
 
       before(function(done) {
         chai.passport.use(strategy)
@@ -47,8 +46,7 @@ describe('Strategy', function() {
     });
 
     describe('handling a request with valid token in form-encoded body parameter', function() {
-      var user
-        , info;
+      var user, info;
 
       before(function(done) {
         chai.passport.use(strategy)
@@ -76,8 +74,7 @@ describe('Strategy', function() {
     });
 
     describe('handling a request with valid credential in URI query parameter', function() {
-      var user
-        , info;
+      var user, info;
 
       before(function(done) {
         chai.passport.use(strategy)
@@ -149,7 +146,7 @@ describe('Strategy', function() {
   describe('failing a request with message string', function() {
     var strategy = new Strategy(function(token, done) {
       if (token == 'vF9dft4qmT') {
-        return done(null, { id: '1234' }, { scope: 'read' });
+        return done(null, { id : '1234' }, { scope : 'read' });
       }
       return done(null, false, 'The access token expired');
     });
@@ -179,9 +176,9 @@ describe('Strategy', function() {
   describe('failing a request with hash containing message', function() {
     var strategy = new Strategy(function(token, done) {
       if (token == 'vF9dft4qmT') {
-        return done(null, { id: '1234' }, { scope: 'read' });
+        return done(null, { id : '1234' }, { scope : 'read' });
       }
-      return done(null, false, { message: 'The access token expired' });
+      return done(null, false, { message : 'The access token expired' });
     });
 
     describe('handling a request with wrong token', function() {

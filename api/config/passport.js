@@ -13,14 +13,14 @@ var mongoose = require('mongoose'),
  * Expose
  */
 
-module.exports = function (passport, config) {
+module.exports = function(passport, config) {
   // serialize sessions
   passport.serializeUser(function(user, done) {
     done(null, user.id)
   })
 
   passport.deserializeUser(function(id, done) {
-    User.load({ criteria: { _id: id } }, function (err, user) {
+    User.load({ criteria : { _id : id } }, function(err, user) {
       done(err, user)
     })
   })
@@ -29,13 +29,13 @@ module.exports = function (passport, config) {
   passport.use(new TokenStrategy(
     function(token, done) {
       var options = {
-        criteria: { token: token },
-        select: 'username email hashed_password salt'
+        criteria : { token : token },
+        select   : 'username email hashedPassword salt'
       };
-      User.load(options, function (err, user) {
+      User.load(options, function(err, user) {
         if (err) return done(err);
         if (!user) {
-          return done(null, false, { message: 'Invalid auth token' });
+          return done(null, false, { message : 'Invalid auth token' });
         }
         return done(null, user);
       });

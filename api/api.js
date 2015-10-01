@@ -9,22 +9,22 @@ var express = require('express'),
 
   appConfig = require('./config/config'),
   appConfigPort = appConfig.port,
-  app = express()
+  app = express(),
+  // Connect to mongodb
+  connect = function() {
+    var options = { server : { socketOptions : { keepAlive : 1 } } };
+    mongoose.connect(appConfig.dbUrl, options);
+  }
   ;
 
-// Connect to mongodb
-var connect = function () {
-  var options = { server: { socketOptions: { keepAlive: 1 } } };
-  mongoose.connect(appConfig.dbUrl, options);
-};
 connect();
 
 mongoose.connection.on('error', console.log);
 mongoose.connection.on('disconnected', connect);
 
 // Bootstrap models
-fs.readdirSync(join(__dirname, 'app/models')).forEach(function (file) {
-  if (~file.indexOf('.js')) require(join(__dirname, 'app/models', file));
+fs.readdirSync(join(__dirname, 'app/models')).forEach(function(file) {
+  if (/\.js$/.test(file)) require(join(__dirname, 'app/models', file));
 });
 
 app
@@ -40,4 +40,4 @@ require('./config/routes')(app, passport);
 require('./config/passport')(passport, appConfig);
 
 app.listen(process.env.PORT || appConfigPort);
-console.log("App listening on port " + appConfigPort);
+console.log('App listening on port ' + appConfigPort);
