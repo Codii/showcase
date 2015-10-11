@@ -1,3 +1,4 @@
 module.exports = {
-  dbUrl : 'mongodb://localhost/showcase_dev'
+  dbUrl     : 'mongodb://localhost/showcase_dev',
+  morganEnv : 'dev'
 };

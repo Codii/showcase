@@ -29,15 +29,14 @@ fs.readdirSync(join(__dirname, 'app/models')).forEach(function(file) {
 
 app
   .use(express.static(__dirname + '/public'))
-  .use(morgan('dev'))
+  .use(morgan(appConfig.morganEnv))
   .use(bodyParser.urlencoded({extended : 'true'}))
   .use(bodyParser.json())
   .use(bodyParser.json({ type : 'application/vnd.api+json'}))
   .use(methodOverride())
   .use(function(err, req, res, next) {
-    res.json({
-      message : err
-    });
+    console.log('amiwrong?')
+    return res.json({ message : err });
   });
 
 require('./config/routes')(app, passport);

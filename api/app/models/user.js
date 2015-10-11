@@ -96,7 +96,7 @@ userSchema.methods = {
    * @api public
    */
   authenticate : function(plainText) {
-    return this.encryptPassword(plainText) === this.hashedPassword;
+    return this.encrypt(plainText) === this.hashedPassword;
   },
 
   /**
