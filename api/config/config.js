@@ -1,10 +1,12 @@
 var _ = require('lodash'),
-  developmentEnvConfig = require('./env/development');
+  devEnvConfig = require('./env/dev'),
+  testEnvConfig = require('./env/test');
 
 _defaults = {
   port : 9001
 };
 
 module.exports = {
-  development : _.extend(_defaults, developmentEnvConfig)
-}[process.env.APP_ENV || 'development']
+  dev  : _.extend(_defaults, devEnvConfig),
+  test : _.extend(_defaults, testEnvConfig)
+}

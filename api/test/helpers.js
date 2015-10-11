@@ -4,9 +4,15 @@
  */
 
 var async = require('async'),
-  mongoose = require('mongoose'),
-  users = require('../app/models/user.js'),
-  UserModel = users.model;
+  testEnv = 'test',
+  server = require('../server')(testEnv),
+  UserModel = require('../app/models/user').model,
+  serverPort = process.env.PORT || 19002;
+
+// server//
+//   .listen(serverPort);
+//
+// console.info('App [' + testEnv.toUpperCase() + '] listening on port ' + serverPort);
 
 /**
  * Clear database
@@ -15,12 +21,14 @@ var async = require('async'),
  * @api public
  */
 
-mongoose.connect('mongodb://localhost/showcase_test');
-
 exports.clearDb = function(done) {
   async.parallel([
     function(cb) {
       UserModel.collection.remove(cb)
     }
   ], done)
+}
+
+exports.getServer = function() {
+  return server;
 }

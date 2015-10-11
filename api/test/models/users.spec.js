@@ -1,5 +1,4 @@
-var mongoose = require('mongoose'),
-  chai = require('chai'),
+var chai = require('chai'),
   expect = chai.expect,
   _ = require('lodash'),
   testHelpers = require('../helpers'),
@@ -14,7 +13,7 @@ describe('Users', function() {
   beforeEach(function(done) {
     UserModel.create({
       email    : fakeEmail,
-      name : 'fakeUser',
+      name     : 'fakeUser',
       password : 'fakefakefake'
     }, done);
   });
