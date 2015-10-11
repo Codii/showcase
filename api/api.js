@@ -35,7 +35,7 @@ app
   .use(bodyParser.json({ type : 'application/vnd.api+json'}))
   .use(methodOverride())
   .use(function(err, req, res, next) {
-    console.log('amiwrong?')
+    
     return res.json({ message : err });
   });
 
