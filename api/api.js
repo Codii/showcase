@@ -33,7 +33,12 @@ app
   .use(bodyParser.urlencoded({extended : 'true'}))
   .use(bodyParser.json())
   .use(bodyParser.json({ type : 'application/vnd.api+json'}))
-  .use(methodOverride());
+  .use(methodOverride())
+  .use(function(err, req, res, next) {
+    res.json({
+      message : err
+    });
+  });
 
 require('./config/routes')(app, passport);
 

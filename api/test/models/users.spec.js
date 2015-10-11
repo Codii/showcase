@@ -6,7 +6,6 @@ var mongoose = require('mongoose'),
   users = require('../../app/models/user.js'),
   UserModel = users.model;
 
-mongoose.connect('mongodb://localhost/showcase_test');
 
 describe('Users', function() {
   var fakeEmail = 'fake@yopmail.com',
@@ -15,7 +14,7 @@ describe('Users', function() {
   beforeEach(function(done) {
     UserModel.create({
       email    : fakeEmail,
-      username : 'fakeUser',
+      name : 'fakeUser',
       password : 'fakefakefake'
     }, done);
   });

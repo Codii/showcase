@@ -5,11 +5,13 @@
 var mongoose = require('mongoose'),
   crypto = require('crypto'),
   userSchema = new mongoose.Schema({
-    firstname      : { type : String, default : '' },
-    lastname       : { type : String, default : '' },
+    firstName      : { type : String, default : '' },
+    lastName       : { type : String, default : '' },
     email          : { type : String, default : '' },
-    username       : { type : String, default : '' },
+    lastSignin     : { type : String, default : '' },
+    name           : { type : String, default : '' },
     hashedPassword : { type : String, default : '' },
+    authToken      : { type : String, default : '' },
     salt           : { type : String, default : '' }
   }),
   validatePresenceOf
@@ -24,7 +26,7 @@ userSchema
   .set(function(password) {
     this._password = password;
     this.salt = this.makeSalt();
-    this.hashedPassword = this.encryptPassword(password);
+    this.hashedPassword = this.encrypt(password);
   })
   .get(function() {
     return this._password
@@ -37,8 +39,6 @@ userSchema
 function validatePresenceOf(value) {
   return value && value.length;
 };
-
-// the below 5 validations only apply if you are signing up traditionally
 
 userSchema.path('email').validate(function(email) {
   if (this.skipValidation()) return true;
@@ -57,7 +57,7 @@ userSchema.path('email').validate(function(email, fn) {
   } else fn(true);
 }, 'Email already exists');
 
-userSchema.path('username').validate(function(username) {
+userSchema.path('name').validate(function(username) {
   if (this.skipValidation()) return true;
   return username.length;
 }, 'Username cannot be blank');
@@ -76,9 +76,10 @@ userSchema.pre('save', function(next) {
   if (!this.isNew) return next();
 
   if (!validatePresenceOf(this.password) && !this.skipValidation()) {
-    next(new Error('Invalid password'));
+    return next(new Error('Invalid password'));
   } else {
-    next();
+    this.authToken = this.generateAuthToken();
+    return next();
   }
 });
 
@@ -117,7 +118,7 @@ userSchema.methods = {
    * @api public
    */
 
-  encryptPassword : function(password) {
+  encrypt : function(password) {
     if (!password) {
       return '';
     }
@@ -126,6 +127,23 @@ userSchema.methods = {
         .createHmac('sha1', this.salt)
         .update(password)
         .digest('hex');
+    } catch (err) {
+      return '';
+    }
+  },
+
+  /**
+   * Generate auth token
+   *
+   * @return {String}
+   * @api public
+   */
+
+  generateAuthToken : function() {
+    try {
+      return crypto
+        .randomBytes(20)
+        .toString('hex');
     } catch (err) {
       return '';
     }
@@ -167,8 +185,20 @@ userSchema.statics = {
     this.find({
       email : email
     }, cb);
+  },
+  /**
+   * Find user by authToken
+   *
+   * @param {Object} authToken
+   * @param {Function} cb
+   * @api private
+   */
+  findByAuthToken : function(authToken, cb) {
+    this.find({
+      authToken : authToken
+    }, cb);
   }
-}
+};
 
 module.exports = {
   schema : userSchema,

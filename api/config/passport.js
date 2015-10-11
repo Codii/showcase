@@ -14,23 +14,11 @@ var mongoose = require('mongoose'),
  */
 
 module.exports = function(passport, config) {
-  // serialize sessions
-  passport.serializeUser(function(user, done) {
-    done(null, user.id)
-  })
-
-  passport.deserializeUser(function(id, done) {
-    User.load({ criteria : { _id : id } }, function(err, user) {
-      done(err, user)
-    })
-  })
-
   // use these strategies
   passport.use(new TokenStrategy(
     function(token, done) {
       var options = {
-        criteria : { token : token },
-        select   : 'username email hashedPassword salt'
+        criteria : { authToken : token }
       };
       User.load(options, function(err, user) {
         if (err) return done(err);

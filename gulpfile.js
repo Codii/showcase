@@ -8,7 +8,7 @@ gulp.task('default', function() {
 });
 
 gulp.task('serve', function() {
-  console.log('Will launch the server');
+  throw 'Not implmtd';
 });
 
 gulp.task('test', ['coverage'], function() {
