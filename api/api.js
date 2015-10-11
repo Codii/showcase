@@ -33,15 +33,18 @@ app
   .use(bodyParser.urlencoded({extended : 'true'}))
   .use(bodyParser.json())
   .use(bodyParser.json({ type : 'application/vnd.api+json'}))
-  .use(methodOverride())
-  .use(function(err, req, res, next) {
-    
-    return res.json({ message : err });
-  });
+  .use(methodOverride());
 
 require('./config/routes')(app, passport);
 
 require('./config/passport')(passport, appConfig);
+
+// Must be called last
+app.use(function(err, req, res, next) {
+  return res
+    .json({ error : err.message })
+    .status(500);
+});
 
 app.listen(process.env.PORT || appConfigPort);
 console.log('App listening on port ' + appConfigPort);
