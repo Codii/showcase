@@ -1,4 +1,4 @@
-var appEnv = process.env.APP_ENV || 'development',
+var appEnv = process.env.APP_ENV || 'dev',
   appPort = process.env.PORT || 9001,
   app = require('./server')(appEnv);
 

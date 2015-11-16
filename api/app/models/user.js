@@ -4,6 +4,7 @@
 
 var mongoose = require('mongoose'),
   crypto = require('crypto'),
+  validator = require('validator'),
   userSchema = new mongoose.Schema({
     firstName      : { type : String, default : '' },
     lastName       : { type : String, default : '' },
@@ -13,9 +14,7 @@ var mongoose = require('mongoose'),
     hashedPassword : { type : String, default : '' },
     authToken      : { type : String, default : '' },
     salt           : { type : String, default : '' }
-  }),
-  validatePresenceOf
-  ;
+  });
 
 /**
  * Virtuals
@@ -40,10 +39,9 @@ function validatePresenceOf(value) {
   return value && value.length;
 };
 
-userSchema.path('email').validate(function(email) {
-  if (this.skipValidation()) return true;
-  return email.length;
-}, 'Email cannot be blank');
+userSchema.path('email').validate(function(email, fn) {
+  return fn(this.skipValidation() || validator.isEmail(email));
+}, 'Email must be valid');
 
 userSchema.path('email').validate(function(email, fn) {
   var User = mongoose.model('User');

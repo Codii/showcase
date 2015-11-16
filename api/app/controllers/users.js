@@ -8,10 +8,12 @@ exports.login = function(req, res, next) {
     password : req.body.password
   });
   User.findByEmail(payload.email, function(err, users) {
-    var user = _.first(users);
+    var user = _.first(users), err;
     if (err) return next(new Error(err))
     if (!user || !user.authenticate(payload.password)) {
-      return next(new Error('Could not authenticate user'));
+      err = new Error('Could not authenticate user');
+      err.withHttpStatus = 401;
+      return next(err);
     }
     // Update lastSignin
     user.lastSignin = new Date();
@@ -45,22 +47,21 @@ exports.index = function(req, res) {
 };
 
 exports.create = function(req, res, next) {
-  var payload = new _validate({
-      email     : req.body.email,
-      password  : req.body.password,
-      name      : req.body.name,
-      firstName : req.body.firstName,
-      lastName  : req.body.lastName
+  var payload = _validate({
+      email     : _.get(req.body, 'email'),
+      password  : _.get(req.body, 'password'),
+      name      : _.get(req.body, 'name'),
+      firstName : _.get(req.body, 'firstName'),
+      lastName  : _.get(req.body, 'lastName')
     }),
     user = new User(payload);
-
   user.save(function(err, user) {
     if (err) {
-      return next(new Error(err));
+      return next(err);
     }
     res.json(user);
   });
-}
+};
 
 function _validate(payload) {
   return _.chain(payload)

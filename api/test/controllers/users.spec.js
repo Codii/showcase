@@ -1,40 +1,34 @@
 var chai = require('chai'),
   expect = chai.expect,
+  _ = require('lodash'),
   request = require('supertest'),
   testHelpers = require('../helpers'),
   server = testHelpers.getServer(),
   User = require('../../app/models/user').model;
 
-describe('Users', function() {
+describe('Users', function () {
   var fakeUserData = {
-      firstName : 'Pablo',
-      lastName  : 'Escobar',
-      name      : 'pablo',
-      email     : 'pablo.escobar@yopmail.com',
-      password  : 'imInLoveWithTheCoca'
+      firstName: 'Pablo',
+      lastName: 'Escobar',
+      name: 'pablo',
+      email: 'pablo.escobar@yopmail.com',
+      password: 'imInLoveWithTheCoca'
     },
     fakeUser;
-  beforeEach(function(done) {
-    fakeUser = new User(fakeUserData);
-    fakeUser.save(done);
-  });
-  describe('#create', function() {
-    it('should not create user as it already exists', function(done) {
+  describe('#create', function () {
+    it('should create user with fake data', function (done) {
       request(server)
         .post('/users')
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
         .send(fakeUserData)
-        .end(function(err, res) {
-          if (err) {
-            console.log(err);
-            done.fail(err);
-          } else {
-            expect(res.status).to.equal(500);
-            done();
-          }
+        .end(function (err, res) {
+          expect(res.status).to.equal(200);
+          done();
         });
     })
   });
-  afterEach(function(done) {
+  afterEach(function (done) {
     fakeUser = null;
     testHelpers.clearDb(done);
   });

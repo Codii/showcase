@@ -31,7 +31,7 @@ module.exports = function(env) {
     .use(bodyParser.json())
     .use(bodyParser.json({ type : 'application/vnd.api+json'}))
     .use(methodOverride());
-  if (env == 'dev') {
+  if (appConfig.morganEnv) {
     app.use(morgan(appConfig.morganEnv));
   }
 
@@ -43,7 +43,7 @@ module.exports = function(env) {
   app.use(function(err, req, res, next) {
     return res
       .json({ error : err.message })
-      .status(500);
+      .status(err.withHttpStatus || 500);
   });
 
   return app;

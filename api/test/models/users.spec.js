@@ -8,14 +8,22 @@ var chai = require('chai'),
 
 describe('Users', function() {
   var fakeEmail = 'fake@yopmail.com',
-    fakeUser;
-
-  beforeEach(function(done) {
-    UserModel.create({
+    fakeUserData = {
       email    : fakeEmail,
       name     : 'fakeUser',
       password : 'fakefakefake'
-    }, done);
+    },
+    fakeUser;
+
+  beforeEach(function(done) {
+    UserModel.create(fakeUserData, done);
+  });
+
+  it('should not let the fake user be created twice', function(done) {
+    UserModel.create(fakeUserData, function(err) {
+      expect(err).to.be.ok;
+      done();
+    });
   });
 
   describe('#findByEmail()', function() {

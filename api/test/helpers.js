@@ -6,13 +6,7 @@
 var async = require('async'),
   testEnv = 'test',
   server = require('../server')(testEnv),
-  UserModel = require('../app/models/user').model,
-  serverPort = process.env.PORT || 19002;
-
-// server//
-//   .listen(serverPort);
-//
-// console.info('App [' + testEnv.toUpperCase() + '] listening on port ' + serverPort);
+  UserModel = require('../app/models/user').model;
 
 /**
  * Clear database
