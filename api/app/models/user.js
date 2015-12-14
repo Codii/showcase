@@ -85,7 +85,10 @@ userSchema.pre('save', function(next) {
     return next(new Error('Invalid password'));
   }
 
-  this.authToken = this.generateAuthToken();
+  if (this.isNew) {
+    this.authToken = this.generateAuthToken();
+  }
+
   return next();
 });
 

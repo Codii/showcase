@@ -58,7 +58,7 @@ describe('Users', function() {
         });
     });
 
-    it('should log in registered user', function(done) {
+    it('should not log in unknown user', function(done) {
       request(server)
         .post('/login')
         .set('Accept', 'application/json')
