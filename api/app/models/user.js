@@ -5,6 +5,7 @@
 var mongoose = require('mongoose'),
   crypto = require('crypto'),
   validator = require('validator'),
+  modelTimestamps = require('./plugins/timestamps'),
   schema = {
     authToken      : { type : String },
     email          : { type : String },
@@ -16,6 +17,13 @@ var mongoose = require('mongoose'),
     salt           : { type : String }
   },
   userSchema = new mongoose.Schema(schema);
+
+/**
+ * Plugins
+ */
+
+userSchema
+  .plugin(modelTimestamps);
 
 /**
  * Virtuals
@@ -75,10 +83,10 @@ userSchema.pre('save', function(next) {
 
   if (!validatePresenceOf(this.password) && !this.skipValidation()) {
     return next(new Error('Invalid password'));
-  } else {
-    this.authToken = this.generateAuthToken();
-    return next();
   }
+
+  this.authToken = this.generateAuthToken();
+  return next();
 });
 
 /**

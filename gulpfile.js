@@ -14,7 +14,7 @@ gulp.task('serve', function() {
 gulp.task('test', ['coverage'], function() {
   return gulp.src('api/test/**/*.spec.js')
     .pipe(mocha({
-      reporter : 'nyan',
+      reporter : 'mocha-better-spec-reporter',
       require  : ['./api/test/init']
     }))
     .pipe(istanbul.writeReports())

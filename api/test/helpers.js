@@ -30,3 +30,10 @@ exports.clearDb = function(done) {
 exports.getServer = function() {
   return server;
 };
+
+exports.handleError = function(completionCallback) {
+  return function() {
+    console.warn('error')
+    completionCallback.fail();
+  }
+}

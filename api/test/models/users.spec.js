@@ -37,7 +37,10 @@ describe('Users', function() {
     });
   });
 
+
+
   afterEach(function(done) {
+    fakeUser = null;
     testHelpers.clearDb(done);
   });
 });
