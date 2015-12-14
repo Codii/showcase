@@ -5,7 +5,7 @@ module.exports = {
 };
 
 
-function restrict(source, fields) {
+function restrict(source, fields, dontOmit) {
   if (!_.isArray(fields) || !_.isObject(source)) {
     return;
   }
@@ -15,9 +15,9 @@ function restrict(source, fields) {
     payload[field] = _.get(source, field);
   });
 
-  payload = _.omit(payload, _.isUndefined);
-
-  console.log(payload)
+  if (!dontOmit) {
+    payload = _.omit(payload, _.isUndefined);
+  }
 
   return _.keys(payload).length == fields.length ? payload : null;
 }
