@@ -41,9 +41,9 @@ module.exports = function(env) {
 
   // Must be called last
   app.use(function(err, req, res, next) {
+    res.statusCode = err.withHttpStatus || 500;
     return res
-      .json({ error : err.message })
-      .status(err.withHttpStatus || 500);
+      .json({ error : err.message });
   });
 
   return app;
