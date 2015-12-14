@@ -38,7 +38,7 @@
   "disallowTrailingComma"                      : true,
   "disallowTrailingWhitespace"                 : true,
   "disallowYodaConditions"                     : true,
-  "requireAlignedObjectValues"                 : "ignoreLineBreak",
+  "requireAlignedObjectValues"                 : "all",
   "requireBlocksOnNewline"                     : true,
   "requireCamelCaseOrUpperCaseIdentifiers"     : "ignoreProperties",
   "requireCapitalizedConstructors"             : true,

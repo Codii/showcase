@@ -6,7 +6,8 @@
 var async = require('async'),
   testEnv = 'test',
   server = require('../server')(testEnv),
-  UserModel = require('../app/models/user').model;
+  UserModel = require('../app/models/user').model,
+  ShowcaseModel = require('../app/models/showcase').model;
 
 /**
  * Clear database
@@ -17,12 +18,15 @@ var async = require('async'),
 
 exports.clearDb = function(done) {
   async.parallel([
-    function(cb) {
-      UserModel.collection.remove(cb)
+    function(done) {
+      return UserModel.collection.remove(done);
+    },
+    function(done) {
+      return ShowcaseModel.collection.remove(done);
     }
-  ], done)
-}
+  ], done);
+};
 
 exports.getServer = function() {
   return server;
-}
+};

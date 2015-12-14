@@ -5,16 +5,17 @@
 var mongoose = require('mongoose'),
   crypto = require('crypto'),
   validator = require('validator'),
-  userSchema = new mongoose.Schema({
-    firstName      : { type : String, default : '' },
-    lastName       : { type : String, default : '' },
-    email          : { type : String, default : '' },
-    lastSignin     : { type : String, default : '' },
-    name           : { type : String, default : '' },
-    hashedPassword : { type : String, default : '' },
-    authToken      : { type : String, default : '' },
-    salt           : { type : String, default : '' }
-  });
+  schema = {
+    authToken      : { type : String },
+    email          : { type : String },
+    firstName      : { type : String },
+    hashedPassword : { type : String },
+    lastName       : { type : String },
+    lastSignin     : { type : String },
+    name           : { type : String },
+    salt           : { type : String }
+  },
+  userSchema = new mongoose.Schema(schema);
 
 /**
  * Virtuals
@@ -65,7 +66,6 @@ userSchema.path('hashedPassword').validate(function(hashedPassword) {
   return hashedPassword.length;
 }, 'Password cannot be blank');
 
-
 /**
  * Pre-save hook
  */
@@ -93,7 +93,7 @@ userSchema.methods = {
    * @return {Boolean}
    * @api public
    */
-  authenticate : function(plainText) {
+  authenticate      : function(plainText) {
     return this.encrypt(plainText) === this.hashedPassword;
   },
 
@@ -104,7 +104,7 @@ userSchema.methods = {
    * @api public
    */
 
-  makeSalt : function() {
+  makeSalt          : function() {
     return Math.round((new Date().valueOf() * Math.random())).toString();
   },
 
@@ -116,7 +116,7 @@ userSchema.methods = {
    * @api public
    */
 
-  encrypt : function(password) {
+  encrypt           : function(password) {
     if (!password) {
       return '';
     }
@@ -151,7 +151,7 @@ userSchema.methods = {
    * Validation is not required if using OAuth
    */
 
-  skipValidation : function() {
+  skipValidation    : function() {
     return false;
   }
 };
@@ -164,7 +164,7 @@ userSchema.statics = {
    * @param {Function} cb
    * @api private
    */
-  list : function(options, cb) {
+  list            : function(options, cb) {
     var criteria = options.criteria || {};
 
     this.find(criteria)
@@ -179,7 +179,7 @@ userSchema.statics = {
    * @param {Function} cb
    * @api private
    */
-  findByEmail : function(email, cb) {
+  findByEmail     : function(email, cb) {
     this.find({
       email : email
     }, cb);
