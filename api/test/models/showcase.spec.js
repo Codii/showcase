@@ -41,6 +41,16 @@ describe('Showcases', function() {
     });
   });
 
+  it('should not let a showcase be created without creator id', function(done) {
+    var otherShowcase = { name : 'new_showcase' };
+
+    ShowcaseModel.create(otherShowcase, function(err, showcase) {
+      expect(err).to.be.ok;
+      expect(showcase).to.not.be.ok;
+      done();
+    });
+  });
+
   afterEach(function(done) {
     user = null;
     showcase = null;
