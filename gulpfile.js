@@ -17,7 +17,6 @@ gulp.task('test', ['coverage'], function() {
       reporter : 'mocha-better-spec-reporter',
       require  : ['./api/test/init']
     }))
-    .pipe(istanbul.writeReports())
     .on('error', _handleError)
     .once('end', function() {
       process.exit();

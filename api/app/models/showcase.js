@@ -3,21 +3,21 @@
  */
 
 var mongoose = require('mongoose'),
-  schema = {
+  Schema = mongoose.Schema,
+  showcaseSchema = new Schema({
     createdAt   : { type : Date },
     description : { type : String },
-    name        : { type : String },
+    name        : { type : String, required : true },
     updatedAt   : { type : Date },
-    userId      : { type : String }
-  },
-  showcaseSchema = new mongoose.Schema(schema);
+    creator     : { type : Schema.Types.ObjectId, required : true }
+  });
 
 /**
  * Validations
  */
-showcaseSchema.path('name').validate(function(showcaseName) {
-  return this.skipValidation() || showcaseName.length;
-}, 'Name cannot be blank');
+showcaseSchema.path('name').validate(function(showcaseName, fn) {
+  fn(this.skipValidation() || showcaseName.length);
+}, 'showcase.name cannot be blank');
 
 showcaseSchema.path('name').validate(function(name, fn) {
   var Showcase = mongoose.model('Showcase');
@@ -29,7 +29,11 @@ showcaseSchema.path('name').validate(function(name, fn) {
       fn(!err && showcases.length === 0);
     });
   } else fn(true);
-}, 'Showcase name already exists');
+}, 'showcase.name already taken (unique)');
+
+showcaseSchema.path('creator').validate(function(showcaseCreator, fn) {
+  fn(this.skipValidation() || showcaseCreator.length);
+}, 'showcase.creator cannot be blank');
 
 /**
  * Pre-save hook

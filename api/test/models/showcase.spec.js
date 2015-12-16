@@ -2,33 +2,49 @@ var chai = require('chai'),
   expect = chai.expect,
   helpers = require('../helpers'),
   showcase = require('../../app/models/showcase'),
-  ShowcaseModel = showcase.model;
+  user = require('../../app/models/user'),
+  ShowcaseModel = showcase.model,
+  UserModel = user.model;
 
 describe('Showcases', function() {
-  var showcaseData = {
-    name : 'veggie.girl17'
-  };
+  var userEmail = 'fake@yopmail.com',
+    userData = {
+      email    : userEmail,
+      name     : 'bob',
+      password : 'mynameisbobbut..hushh'
+    },
+    showcaseData = {
+      name : 'veggie.girl17'
+    },
+    user,
+    showcase;
 
   beforeEach(function(done) {
-    ShowcaseModel.create(showcaseData, done);
+    user = new UserModel(userData);
+    showcase = new ShowcaseModel(showcaseData);
+
+    user.save().then(function(user) {
+      showcase.creator = user.id;
+      return showcase.save().then(function() {
+        done();
+      });
+    }, done);
   });
 
   it('should not let two showcases use the same name', function(done) {
-    var otherShowcase = {
-      name : showcaseData.name
-    };
+    var otherShowcase = { name : showcaseData.name };
 
     ShowcaseModel.create(otherShowcase, function(err, showcase) {
-      if (!err) {
-        return done.fail();
-      }
-
+      expect(err).to.be.ok;
       expect(showcase).to.not.be.ok;
       done();
     });
   });
 
   afterEach(function(done) {
+    user = null;
+    showcase = null;
+
     helpers.clearDb(done);
   });
 });

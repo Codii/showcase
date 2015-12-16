@@ -1,12 +1,17 @@
 var _ = require('lodash'),
   mongoose = require('mongoose'),
+  payloadShield = require('../shield/payload'),
   User = mongoose.model('User');
 
 exports.login = function(req, res, next) {
-  var payload = _validate({
-    email    : req.body.email,
-    password : req.body.password
-  });
+  var payload = payloadShield.restrict(req.body, ['email', 'password']);
+
+  if (!payload) {
+    var err = new Error('Missing email, password or both');
+    err.withHttpStatus = 400;
+    return next(err);
+  }
+
   User.findByEmail(payload.email, function(err, users) {
     var user = _.first(users), err;
     if (err) return next(new Error(err))
@@ -47,14 +52,17 @@ exports.index = function(req, res) {
 };
 
 exports.create = function(req, res, next) {
-  var payload = _validate({
-      email     : _.get(req.body, 'email'),
-      password  : _.get(req.body, 'password'),
-      name      : _.get(req.body, 'name'),
-      firstName : _.get(req.body, 'firstName'),
-      lastName  : _.get(req.body, 'lastName')
-    }),
-    user = new User(payload);
+  var payload = payloadShield.restrict(req.body, ['email', 'password', 'name', 'firstName', 'lastName']),
+    user;
+
+  if (!payload) {
+    var err = new Error('Bad payload');
+    err.withHttpStatus = 400;
+    return next(err);
+  }
+
+  user = User(payload);
+
   user.save(function(err, user) {
     if (err) {
       return next(err);
@@ -62,10 +70,3 @@ exports.create = function(req, res, next) {
     res.json(user);
   });
 };
-
-function _validate(payload) {
-  return _.chain(payload)
-    .omit(_.isUndefined)
-    .omit(_.isNull)
-    .value();
-}

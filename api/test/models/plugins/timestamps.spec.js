@@ -4,7 +4,7 @@ var chai = require('chai'),
   helpers = require('../../helpers'),
   modelTimestampsPlugin = require('../../../app/models/plugins/timestamps'),
   junkModelSchema = new mongoose.Schema({
-    message : { type : 'String' }
+    message : { type : String }
   }),
   JunkModel,
   token;

@@ -1,6 +1,7 @@
 var chai = require('chai'),
   expect = chai.expect,
   _ = require('lodash'),
+  mongoose = require('mongoose'),
   request = require('supertest'),
   testHelpers = require('../helpers'),
   server = testHelpers.getServer(),
@@ -10,21 +11,24 @@ describe('Users', function() {
   var fakeUserData = {
       firstName : 'Pablo',
       lastName  : 'Escobar',
-      name      : 'pablo',
       email     : 'pablo.escobar@yopmail.com',
+      name      : 'pablo',
       password  : 'imInLoveWithTheCoca'
     },
     registeredUserData = {
       firstName : 'John',
       lastName  : 'Fullofshit',
       name      : 'johnfull',
-      email     : 'john.fullof@yopmail.com',
+      email     : 'john@yopmail.com',
       password  : '#imfullofshit'
     },
-    fakeUser;
+    registredUser;
 
   beforeEach(function(done) {
-    UserModel.create(registeredUserData, done);
+    registredUser = new UserModel(registeredUserData);
+    registredUser.save().then(function(user) {
+      done();
+    }, done);
   })
 
   describe('#create', function() {
@@ -38,7 +42,24 @@ describe('Users', function() {
           expect(res.status).to.equal(200);
           done();
         });
-    })
+    });
+
+    it('should not create user with no a valid email', function(done) {
+      request(server)
+        .post('/users')
+        .set('Content-Type', 'application/json')
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .send({
+          name     : fakeUserData.name,
+          password : fakeUserData.password
+        })
+        .end(function(err, res) {
+          expect(res.status).to.equal(400);
+          done();
+        });
+    });
+
   });
 
   describe('#login', function() {
@@ -75,7 +96,6 @@ describe('Users', function() {
   });
 
   afterEach(function(done) {
-    fakeUser = null;
     testHelpers.clearDb(done);
   });
 });

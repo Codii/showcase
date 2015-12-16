@@ -3,17 +3,18 @@
  */
 
 var mongoose = require('mongoose'),
+  _ = require('lodash'),
   crypto = require('crypto'),
   validator = require('validator'),
   modelTimestamps = require('./plugins/timestamps'),
   schema = {
     authToken      : { type : String },
-    email          : { type : String },
+    email          : { type : String, unique : true, required : true},
     firstName      : { type : String },
     hashedPassword : { type : String },
     lastName       : { type : String },
     lastSignin     : { type : String },
-    name           : { type : String },
+    name           : { type : String, unique : true, required : true },
     salt           : { type : String }
   },
   userSchema = new mongoose.Schema(schema);
@@ -45,50 +46,51 @@ userSchema
  */
 
 function validatePresenceOf(value) {
-  return value && value.length;
+  return !_.isEmpty(value);
 };
 
 userSchema.path('email').validate(function(email, fn) {
-  return fn(this.skipValidation() || validator.isEmail(email));
-}, 'Email must be valid');
-
-userSchema.path('email').validate(function(email, fn) {
   var User = mongoose.model('User');
-  if (this.skipValidation()) fn(true);
+
+  if (this.skipValidation()) {
+    return true;
+  }
+
+  if (!validatePresenceOf(email) || !validator.isEmail(email)) {
+    return false;
+  }
 
   // Check only when it is a new user or when email field is modified
   if (this.isNew || this.isModified('email')) {
     User.find({ email : email }).exec(function(err, users) {
-      fn(!err && users.length === 0);
+      var isEmailAvailable = !err && users.length === 0;
+      fn(isEmailAvailable);
     });
-  } else fn(true);
-}, 'Email already exists');
+  } else {
+    return true;
+  }
+}, 'user.email is not valid or is already taken');
 
-userSchema.path('name').validate(function(username) {
-  if (this.skipValidation()) return true;
-  return username.length;
-}, 'Username cannot be blank');
+userSchema.path('name').validate(function(name) {
+  return validatePresenceOf(name);
+}, 'user.name cannot be blank');
 
 userSchema.path('hashedPassword').validate(function(hashedPassword) {
   if (this.skipValidation()) return true;
   return hashedPassword.length;
-}, 'Password cannot be blank');
+}, 'user.password cannot be blank');
 
 /**
  * Pre-save hook
  */
 
 userSchema.pre('save', function(next) {
-  if (!this.isNew) return next();
-
-  if (!validatePresenceOf(this.password) && !this.skipValidation()) {
-    return next(new Error('Invalid password'));
-  }
-
   if (this.isNew) {
+    if (!validatePresenceOf(this.password) && !this.skipValidation()) {
+      return next(new Error('user.password must be set'));
+    }
     this.authToken = this.generateAuthToken();
   }
-
   return next();
 });
 

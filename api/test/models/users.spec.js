@@ -9,13 +9,17 @@ describe('Users', function() {
   var fakeEmail = 'fake@yopmail.com',
     fakeUserData = {
       email    : fakeEmail,
-      name     : 'fakeUser',
-      password : 'fakefakefake'
+      name     : 'fake_user',
+      password : 'thispasswordisfake'
     },
     fakeUser;
 
   beforeEach(function(done) {
-    UserModel.create(fakeUserData, done);
+    fakeUser = new UserModel(fakeUserData);
+
+    fakeUser.save(function(err) {
+      done();
+    });
   });
 
   it('should not let the fake user be created twice', function(done) {
@@ -36,7 +40,6 @@ describe('Users', function() {
       });
     });
   });
-
 
   afterEach(function(done) {
     fakeUser = null;
