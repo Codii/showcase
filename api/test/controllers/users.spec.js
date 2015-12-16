@@ -44,16 +44,13 @@ describe('Users', function() {
         });
     });
 
-    it('should not create user with no a valid email', function(done) {
+    it('should not create user without required payload', function(done) {
       request(server)
         .post('/users')
         .set('Content-Type', 'application/json')
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
-        .send({
-          name     : fakeUserData.name,
-          password : fakeUserData.password
-        })
+        .send()
         .end(function(err, res) {
           expect(res.status).to.equal(400);
           done();
